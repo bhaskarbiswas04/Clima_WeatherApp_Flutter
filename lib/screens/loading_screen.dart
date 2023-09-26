@@ -10,7 +10,6 @@ class loadingScreen extends StatefulWidget {
 
 // ignore: camel_case_types
 class _loadingScreenState extends State<loadingScreen> {
-  Location l = Location();
 
   @override
   //initState is a LifeCycle Method.
