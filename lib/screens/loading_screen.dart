@@ -1,8 +1,10 @@
-import 'dart:convert';
-
+import 'package:clima_weather_app/screens/location_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clima_weather_app/services/location.dart';
-import 'package:http/http.dart';
+import 'package:clima_weather_app/services/networking.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+const apiKey = 'ce45277f8f99845d1d7d85a265be6a95';
 
 class loadingScreen extends StatefulWidget {
   const loadingScreen({super.key});
@@ -17,35 +19,36 @@ class _loadingScreenState extends State<loadingScreen> {
   //initState is a LifeCycle Method.
   void initState() {
     super.initState(); //This will call the method before the widget is build.
-    getLocation();
+    getLocationData();
   }
 
-  void getLocation() async {
+  void getLocationData() async {
     Location loc = Location();
     await loc.getCurrentLocation();
-    print('Latitude : ${loc.latitude}');
-    print('Longitude : ${loc.longitude}');
-  }
 
-  void getData() async {
-    Response response = await get(Uri.parse(
-        'https://api.openweathermap.org/data/2.5/weather?lat=64.34&lon=10.99&appid=ce45277f8f99845d1d7d85a265be6a95'));
+    NetworkHelper networkHelper = NetworkHelper(
+        url:
+            'https://api.openweathermap.org/data/2.5/weather?lat=${loc.latitude}&lon=${loc.longitude}&appid=$apiKey&units=metric');
 
-    if (response.statusCode >= 200) {
-      String data = response.body;
+    var weatherData = await networkHelper.getData();
 
-      var temperature = jsonDecode(data)['main']['temp'];
-      var condition = jsonDecode(data)['weather'][0]['id'];
-      var cityName = jsonDecode(data)['name'];
-
-    } else {
-      print(response.statusCode);
-    }
+    // ignore: use_build_context_synchronously
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context) {
+        return locationScreen(locationWeather: weatherData);
+      },
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    getData();
-    return Scaffold();
+    return const Scaffold(
+      body: Center(
+        child: SpinKitSpinningLines(
+          color: Colors.white,
+          size: 100.0,
+        ),
+      ),
+    );
   }
 }
