@@ -14,7 +14,7 @@ class locationScreen extends StatefulWidget {
 
 class _locationScreenState extends State<locationScreen> {
   WeatherModel weather = WeatherModel();
-  late double temperature;
+  late int temperature;
   String? weatherIcon;
   String? cityName;
   String? weatherMessage;
@@ -33,7 +33,8 @@ class _locationScreenState extends State<locationScreen> {
         weatherMessage = 'Can\'t fetch the weather';
         weatherIcon = null;
       } else {
-        temperature = weatherData['main']['temp'];
+        double temp = weatherData['main']['temp'];
+        temperature = temp.toInt();
         weatherMessage = weather.getMessage(temperature);
 
         var condition = weatherData['weather'][0]['id'];
@@ -76,11 +77,17 @@ class _locationScreenState extends State<locationScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(context,
+                    onPressed: () async {
+                      var typedName = await Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return cityScreen();
                       }));
+
+                      if (typedName != null) {
+                        var weatherData = await weather.weatherByCityName(
+                            cityName: typedName);
+                        updateUI(weatherData: weatherData);
+                      }
 
                       // print(typedName);
                     },
@@ -97,7 +104,7 @@ class _locationScreenState extends State<locationScreen> {
                   children: <Widget>[
                     //Temperature update
                     Text(
-                      '${temperature.truncate()}°C',
+                      '${temperature}°C',
                       style: kTempTextStyle,
                     ),
                     Text(

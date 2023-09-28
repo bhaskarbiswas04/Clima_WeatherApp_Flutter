@@ -24,14 +24,11 @@ class _loadingScreenState extends State<loadingScreen> {
     dynamic weatherData = await weatherModel.getLocationWeather();
 
     // ignore: use_build_context_synchronously
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return locationScreen(locationWeather: weatherData);
-        },
-      ),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return locationScreen(
+        locationWeather: weatherData,
+      );
+    }));
   }
 
   @override
